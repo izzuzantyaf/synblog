@@ -29,15 +29,30 @@ class GorestService {
     url.searchParams.append("per_page", options.per_page.toString());
 
     const response = await axios.get<Gorest.Post[]>(url.toString());
-    const data = response.data;
 
-    return {
-      posts: data,
-      pagination: {
-        page: options.page,
-        next_page: options.page + 1 <= MAX_PAGE ? options.page + 1 : null,
-      },
-    };
+    return response;
+  }
+
+  /**
+   * Get Gorest post by id
+   * @param id Post id
+   * @returns
+   */
+  async getPost(id: Gorest.Post["id"]) {
+    const response = await axios.get<Gorest.Post>(
+      `${this.baseUrl}/posts/${id}`
+    );
+    return response;
+  }
+
+  /**
+   * Get Gorest user
+   * @param id User id
+   * @returns
+   */
+  async getUser(id: Gorest.User["id"]) {
+    const response = await axios.get(`${this.baseUrl}/users/${id}`);
+    return response;
   }
 }
 
