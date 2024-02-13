@@ -2,6 +2,14 @@
   "name": "synblog",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Izzu Zantya Fawwas",
+    "email": "izzuzantyaf@gmail.com",
+    "url": "https://izzuzantyaf.space"
+  },
+  "engines": {
+    "node": ">=18.17.0 <20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
