@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "usehooks-ts";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms/Button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/molecules/Dialog";
 import {
   Drawer,
   DrawerClose,
@@ -20,9 +20,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/molecules/Drawer";
+import { Input } from "@/components/atoms/Input";
+import { Label } from "@/components/atoms/Label";
 import {
   Select,
   SelectContent,
@@ -31,14 +31,14 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/atoms/Select";
 import { Loader2, PlusIcon } from "lucide-react";
 import {
   useCreateUser,
   useGetUsers,
   useUpdateUser,
 } from "@/modules/gorest/gorest.hooks";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/useToast";
 
 export function DrawerDialog({
   isUpdate = false,
@@ -136,7 +136,7 @@ export function DrawerDialog({
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add user</DialogTitle>
+            <DialogTitle>{isUpdate ? "Update user" : "Add user"}</DialogTitle>
             <DialogDescription>
               Fill your profile and then click save.
             </DialogDescription>
@@ -161,7 +161,7 @@ export function DrawerDialog({
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Add user</DrawerTitle>
+          <DrawerTitle>{isUpdate ? "Update user" : "Add user"}</DrawerTitle>
           <DrawerDescription>
             Fill your profile and then click save.
           </DrawerDescription>
@@ -200,10 +200,10 @@ function ProfileForm({
 }: React.ComponentProps<"form"> & {
   isCreateUserLoading: boolean;
   isUpdateUserLoading: boolean;
-  onNameChange: (...arg: any) => void;
-  onEmailChange: (...arg: any) => void;
-  onGenderChange: (...arg: any) => void;
-  onStatusChange: (...arg: any) => void;
+  onNameChange: (arg: any) => void;
+  onEmailChange: (arg: any) => void;
+  onGenderChange: (arg: any) => void;
+  onStatusChange: (arg: any) => void;
   user?: any;
 }) {
   return (

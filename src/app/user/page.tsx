@@ -1,7 +1,7 @@
 "use client";
-import { Navbar } from "@/components/Navbar";
-import { TypographyH1 } from "@/components/typography/h1";
-import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/organisms/Navbar";
+import { TypographyH1 } from "@/components/atoms/TypographyH1";
+import { Button } from "@/components/atoms/Button";
 import { useDeleteUser, useGetUsers } from "@/modules/gorest/gorest.hooks";
 import {
   ArrowLeftIcon,
@@ -18,11 +18,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DrawerDialog } from "@/components/ui/drawer-dialog";
-import { Input } from "@/components/ui/input";
+} from "@/components/molecules/Card";
+import { Avatar, AvatarImage } from "@/components/atoms/Avatar";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { DrawerDialog } from "@/components/molecules/DrawerDialog";
+import { Input } from "@/components/atoms/Input";
 import { useDebounceValue } from "usehooks-ts";
 import {
   Dialog,
@@ -32,9 +32,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
+} from "@/components/molecules/Dialog";
+import { useToast } from "@/components/ui/useToast";
 import { useState } from "react";
+import BackButton from "@/components/atoms/BackButton";
+import ProfileCard from "@/components/molecules/ProfileCard";
 
 export default function UserPage() {
   const { isGetUsersLoading, getUsersError, getUsersData, getUsers } =
@@ -77,11 +79,7 @@ export default function UserPage() {
         {/* end of Navbar */}
 
         <div className="px-[16px] pb-0 max-w-screen-lg mx-auto">
-          <Button size="icon" variant="ghost" asChild>
-            <Link href="/">
-              <ArrowLeftIcon />
-            </Link>
-          </Button>
+          <BackButton />
         </div>
 
         <div className="p-[16px] pt-0 mt-[16px] max-w-screen-lg mx-auto ">
@@ -180,17 +178,11 @@ export default function UserPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex gap-[16px] items-center overflow-hidden text-ellipsis">
-                        <Avatar>
-                          <AvatarImage src="https://github.com/shadcn.png" />
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{user.name}</p>
-                          <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                            {user.email}
-                          </p>
-                        </div>
-                      </div>
+                      <ProfileCard
+                        title={user.name}
+                        subTitle={user.email}
+                        avatarSrc="https://github.com/shadcn.png"
+                      />
                     </CardContent>
                   </Card>
                 );

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { GithubIcon } from "lucide-react";
+import { Button } from "@/components/atoms/Button";
+import GithubButton from "@/components/atoms/GithubButton";
 import Link from "next/link";
 
 export function Navbar() {
@@ -16,15 +16,7 @@ export function Navbar() {
           <Link href="/user">Users</Link>
         </Button>
         <div className="flex-grow"></div>
-        <Button size="icon" variant="outline">
-          <Link
-            href={"https://github.com/izzuzantyaf/synblog"}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <GithubIcon />
-          </Link>
-        </Button>
+        <GithubButton />
       </div>
     </div>
   );

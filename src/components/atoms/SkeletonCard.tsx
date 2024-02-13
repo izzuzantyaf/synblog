@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/atoms/Skeleton";
 import { cn } from "@/lib/utils";
 
 export function SkeletonCard({

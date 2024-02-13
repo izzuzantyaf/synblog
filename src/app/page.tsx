@@ -1,8 +1,8 @@
 "use client";
-import { Navbar } from "@/components/Navbar";
-import { SkeletonCard } from "@/components/SkeletonCard";
-import { TypographyH1 } from "@/components/typography/h1";
-import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/organisms/Navbar";
+import { SkeletonCard } from "@/components/atoms/SkeletonCard";
+import { TypographyH1 } from "@/components/atoms/TypographyH1";
+import { Button } from "@/components/atoms/Button";
 import {
   Pagination,
   PaginationContent,
@@ -11,13 +11,14 @@ import {
   PaginationLink,
   PaginationEllipsis,
   PaginationNext,
-} from "@/components/ui/pagination";
+} from "@/components/molecules/Pagination";
 import { useGetPosts } from "@/modules/gorest/gorest.hooks";
 import { picsumService } from "@/modules/picsum/picsum.service";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import ArticleCard from "@/components/molecules/ArticleCard";
 
 export default function Home() {
   const DEFAULT_PAGE = 1;
@@ -87,28 +88,21 @@ export default function Home() {
               const height = 180 * 2;
 
               return (
-                <article key={post.id} className="w-full">
-                  <Link href={`/articles/${post.id}`}>
-                    <Image
-                      src={picsumService.getStaticRandomImageUrl(
-                        post.id.toString(),
-                        { width, height }
-                      )}
-                      placeholder="blur"
-                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mO8Vg8AAjEBV1arMJ8AAAAASUVORK5CYII="
-                      className="mb-5 rounded-lg"
-                      alt={picsumService.getStaticRandomImageUrl(
-                        post.id.toString(),
-                        { width, height }
-                      )}
-                      width={width}
-                      height={height}
-                    />
-                    <h2 className="mb-2 text-xl font-bold leading-tight">
-                      {post.title}
-                    </h2>
-                  </Link>
-                </article>
+                <ArticleCard
+                  key={post.id}
+                  url={`/articles/${post.id}`}
+                  title={post.title}
+                  imageSrc={picsumService.getStaticRandomImageUrl(
+                    post.id.toString(),
+                    { width, height }
+                  )}
+                  imageAlt={picsumService.getStaticRandomImageUrl(
+                    post.id.toString(),
+                    { width, height }
+                  )}
+                  imageWidth={width}
+                  imageHeight={height}
+                />
               );
             })
           ) : (
