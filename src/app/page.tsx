@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const DEFAULT_PAGE = 1;
-  const MAX_PAGE = 5;
+  const MAX_PAGE = 3;
   const searchParams = useSearchParams();
   const pageFromSearchParams = parseInt(searchParams?.get("page") as string);
   const [page, setPage] = useState(
