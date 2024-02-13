@@ -21,7 +21,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
   const USER_NAME_FALLBACK = "Author";
 
   const imageWidth = 640 * 2;
-  const imageHeight = 180 * 2;
+  const imageHeight = 240 * 2;
 
   return (
     <>

@@ -83,11 +83,11 @@ export default function Home() {
             </>
           ) : getPostsData ? (
             getPostsData?.map(post => {
-              const width = 320;
-              const height = 180;
+              const width = 320 * 2;
+              const height = 180 * 2;
 
               return (
-                <article key={post.id}>
+                <article key={post.id} className="w-full">
                   <Link href={`/articles/${post.id}`}>
                     <Image
                       src={picsumService.getStaticRandomImageUrl(
