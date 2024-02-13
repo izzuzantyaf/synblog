@@ -10,7 +10,7 @@ export function useGetPosts(
   const { isLoading, error, data, mutate } = useSWR(
     `get-gorest-posts-${options.page}`,
     (key: string) =>
-      axios.get<Gorest.Post[]>("/api/posts", {
+      axios.get<Gorest.Post[]>("/api/articles", {
         params: { page: options.page, per_page: options.per_page },
       })
   );
@@ -26,7 +26,7 @@ export function useGetPosts(
 export function useGetPost(id: Gorest.Post["id"]) {
   const { isLoading, error, data, mutate } = useSWR(
     id ? `get-gorest-post-${id}` : null,
-    (key: string) => axios.get<Gorest.Post>(`/api/posts/${id}`)
+    (key: string) => axios.get<Gorest.Post>(`/api/articles/${id}`)
   );
 
   return {
@@ -40,7 +40,7 @@ export function useGetPost(id: Gorest.Post["id"]) {
 export function useGetUser(id: Gorest.User["id"]) {
   const { isLoading, error, data, mutate } = useSWR(
     id ? `get-gorest-user-${id}` : null,
-    key => axios.get<Gorest.User>(`/api/user/${id}`)
+    key => axios.get<Gorest.User>(`/api/users/${id}`)
   );
 
   return {

@@ -86,7 +86,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
-              <p className="mt-[16px]">{getPostData.body}</p>
+              <p className="mt-[32px]">{getPostData.body}</p>
             </>
           ) : (
             <p className="text-center">No data</p>
