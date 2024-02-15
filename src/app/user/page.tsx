@@ -33,7 +33,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/molecules/Dialog";
-import { useToast } from "@/components/ui/useToast";
+import { useToast } from "@/hooks/useToast";
 import { useState } from "react";
 import BackButton from "@/components/atoms/BackButton";
 import ProfileCard from "@/components/molecules/ProfileCard";

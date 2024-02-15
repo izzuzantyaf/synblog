@@ -38,7 +38,7 @@ import {
   useGetUsers,
   useUpdateUser,
 } from "@/modules/gorest/gorest.hooks";
-import { useToast } from "@/components/ui/useToast";
+import { useToast } from "@/hooks/useToast";
 
 export function DrawerDialog({
   isUpdate = false,
