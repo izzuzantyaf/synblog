@@ -71,12 +71,6 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
                   subTitle={getUserData?.email}
                   avatarSrc="https://github.com/shadcn.png"
                 />
-                <div>
-                  <p className="font-medium">
-                    {getUserData?.name ?? USER_NAME_FALLBACK}
-                  </p>
-                  <p>{getUserData?.email}</p>
-                </div>
               </div>
 
               <p className="mt-[32px]">{getPostData.body}</p>
