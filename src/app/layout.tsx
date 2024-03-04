@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { Toaster } from "@/components/molecules/Toaster";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* Why wrapped with Suspense?. Because in Next.js 14 the useSearchParams() required to be used inside <Suspense> */}
         <Suspense>
-          {children}
+          <AntdRegistry>{children}</AntdRegistry>
           <Toaster />
         </Suspense>
       </body>
