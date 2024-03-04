@@ -39,6 +39,7 @@ import {
   useUpdateUser,
 } from "@/modules/gorest/gorest.hooks";
 import { useToast } from "@/hooks/useToast";
+import { useRouter } from "next/navigation";
 
 export function DrawerDialog({
   isUpdate = false,
@@ -51,6 +52,11 @@ export function DrawerDialog({
 }) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const router = useRouter();
+  if (open && isUpdate) {
+    router.replace(`/user?id=${initialData.id}`);
+  }
 
   const { createUser, isCreateUserLoading, createUserData, createUserError } =
     useCreateUser();
@@ -132,7 +138,13 @@ export function DrawerDialog({
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={open => {
+          if (!open) router.replace("/user");
+          setOpen(open);
+        }}
+      >
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -157,7 +169,13 @@ export function DrawerDialog({
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer
+      open={open}
+      onOpenChange={setOpen}
+      onClose={() => {
+        router.replace("/user");
+      }}
+    >
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">

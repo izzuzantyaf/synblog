@@ -36,6 +36,10 @@ export default function Home() {
 
   useEffect(() => {
     const pageFromSearchParams = parseInt(searchParams?.get("page") as string);
+    // Mengubah current url tanpa reload
+    if (pageFromSearchParams === 1) {
+      router.replace("/");
+    }
     setPage(pageFromSearchParams ? pageFromSearchParams : DEFAULT_PAGE);
   }, [searchParams?.get("page")]);
 
@@ -83,28 +87,30 @@ export default function Home() {
               <p className="col-span-full">Something went wrong</p>
             </>
           ) : getPostsData ? (
-            getPostsData?.map(post => {
-              const width = 320 * 2;
-              const height = 180 * 2;
+            getPostsData
+              .filter((post, index) => index < 6)
+              ?.map(post => {
+                const width = 320 * 2;
+                const height = 180 * 2;
 
-              return (
-                <ArticleCard
-                  key={post.id}
-                  url={`/articles/${post.id}`}
-                  title={post.title}
-                  imageSrc={picsumService.getStaticRandomImageUrl(
-                    post.id.toString(),
-                    { width, height }
-                  )}
-                  imageAlt={picsumService.getStaticRandomImageUrl(
-                    post.id.toString(),
-                    { width, height }
-                  )}
-                  imageWidth={width}
-                  imageHeight={height}
-                />
-              );
-            })
+                return (
+                  <ArticleCard
+                    key={post.id}
+                    url={`/articles/${post.id}`}
+                    title={post.title}
+                    imageSrc={picsumService.getStaticRandomImageUrl(
+                      post.id.toString(),
+                      { width, height }
+                    )}
+                    imageAlt={picsumService.getStaticRandomImageUrl(
+                      post.id.toString(),
+                      { width, height }
+                    )}
+                    imageWidth={width}
+                    imageHeight={height}
+                  />
+                );
+              })
           ) : (
             <>
               <p className="col-span-full">No articles</p>
