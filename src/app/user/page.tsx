@@ -41,6 +41,7 @@ import {
   Input as InputAntd,
   Button as ButtonAntd,
   Modal as ModalAntd,
+  Card as CardAntd,
   message,
 } from "antd";
 import { UserModal } from "@/components/molecules/UserModal";
@@ -163,8 +164,11 @@ export default function UserPage() {
                 : getUsersData
               )?.map(user => {
                 return (
-                  <Card key={user.id} className="w-full">
-                    <CardHeader className="p-[16px]">
+                  <CardAntd
+                    size="small"
+                    key={user.id}
+                    className="w-full"
+                    extra={
                       <div className="flex flex-row items-center justify-end gap-[0px]">
                         <UpdateUserModal user={user} />
 
@@ -199,16 +203,63 @@ export default function UserPage() {
                           }}
                         ></ButtonAntd>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <ProfileCard
-                        title={user.name}
-                        subTitle={user.email}
-                        avatarSrc="https://github.com/shadcn.png"
-                      />
-                    </CardContent>
-                  </Card>
+                    }
+                  >
+                    <ProfileCard
+                      title={user.name}
+                      subTitle={user.email}
+                      avatarSrc="https://github.com/shadcn.png"
+                    />
+                  </CardAntd>
                 );
+
+                // return (
+                //   <Card key={user.id} className="w-full">
+                //     <CardHeader className="p-[16px]">
+                //       <div className="flex flex-row items-center justify-end gap-[0px]">
+                //         <UpdateUserModal user={user} />
+
+                //         <ButtonAntd
+                //           icon={<TrashIcon className="w-[16px]" />}
+                //           type="text"
+                //           danger
+                //           onClick={() => {
+                //             confirm({
+                //               title: "Are you sure delete this user?",
+                //               content: (
+                //                 <>
+                //                   <p>{user.name}</p>
+                //                   <p>{user.email}</p>
+                //                 </>
+                //               ),
+                //               icon: null,
+                //               okText: "Delete",
+                //               okType: "danger",
+                //               cancelText: "Cancel",
+                //               cancelButtonProps: {
+                //                 type: "text",
+                //               },
+                //               onOk() {
+                //                 return new Promise(async (resolve, reject) => {
+                //                   const res = await handleDelete(user.id);
+                //                   resolve(res);
+                //                 });
+                //               },
+                //               onCancel() {},
+                //             });
+                //           }}
+                //         ></ButtonAntd>
+                //       </div>
+                //     </CardHeader>
+                //     <CardContent>
+                //       <ProfileCard
+                //         title={user.name}
+                //         subTitle={user.email}
+                //         avatarSrc="https://github.com/shadcn.png"
+                //       />
+                //     </CardContent>
+                //   </Card>
+                // );
               }) ?? <p className="col-span-full">No users</p>
             ) : (
               <>
