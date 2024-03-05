@@ -19,7 +19,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ArticleCard from "@/components/molecules/ArticleCard";
-import { Pagination as PaginationAntd } from "antd";
+import { Pagination as PaginationAntd, Card as CardAntd } from "antd";
+import ArticleCardAntd from "@/components/molecules/ArticleCardAntd";
+
+const { Meta } = CardAntd;
 
 export default function Home() {
   const DEFAULT_PAGE = 1;
@@ -94,7 +97,7 @@ export default function Home() {
               const height = 180 * 2;
 
               return (
-                <ArticleCard
+                <ArticleCardAntd
                   key={post.id}
                   url={`/articles/${post.id}`}
                   title={post.title}
@@ -110,6 +113,24 @@ export default function Home() {
                   imageHeight={height}
                 />
               );
+
+              // return (
+              //   <ArticleCard
+              //     key={post.id}
+              //     url={`/articles/${post.id}`}
+              //     title={post.title}
+              //     imageSrc={picsumService.getStaticRandomImageUrl(
+              //       post.id.toString(),
+              //       { width, height }
+              //     )}
+              //     imageAlt={picsumService.getStaticRandomImageUrl(
+              //       post.id.toString(),
+              //       { width, height }
+              //     )}
+              //     imageWidth={width}
+              //     imageHeight={height}
+              //   />
+              // );
             })
           ) : (
             <>
