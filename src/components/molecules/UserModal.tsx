@@ -62,14 +62,17 @@ export function UserModal({
   setIsOpen: (arg: boolean) => void;
 }) {
   const router = useRouter();
+
   if (isOpen && isUpdate) {
     router.replace(`/user?id=${initialData.id}`);
   }
 
   const { createUser, isCreateUserLoading, createUserData, createUserError } =
     useCreateUser();
+
   const { updateUser, isUpdateUserLoading, updateUserData, updateUserError } =
     useUpdateUser();
+
   const { getUsers } = useGetUsers();
 
   const data = React.useRef(
@@ -83,83 +86,115 @@ export function UserModal({
         }
   );
 
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (
-      data.current.name &&
-      data.current.email &&
-      data.current.gender &&
-      data.current.status
-    ) {
-      if (isUpdate) {
-        await updateUser({ id: data.current.id, data: data.current as any })
-          .then(() => {
-            // toast({
-            //   title: "User updated",
-            // });
-            messageApi.open({
-              type: "success",
-              content: "User updated",
-            });
-            setIsOpen(false);
-            getUsers();
-          })
-          .catch(() => {
-            // toast({
-            //   title: "Update user failed",
-            //   variant: "destructive",
-            // });
-            messageApi.open({
-              type: "error",
-              content: "Update user failed",
-            });
-          });
-      } else {
-        await createUser(data.current as any)
-          .then(() => {
-            // toast({
-            //   title: "User created",
-            // });
-            messageApi.open({
-              type: "success",
-              content: "User created",
-            });
-            data.current.name = "";
-            data.current.email = "";
-            data.current.gender = "";
-            data.current.status = "";
-            setIsOpen(false);
-            getUsers();
-          })
-          .catch(() => {
-            // toast({
-            //   title: "Create user failed",
-            //   variant: "destructive",
-            // });
-            messageApi.open({
-              type: "error",
-              content: "Create user failed",
-            });
-          });
-      }
+  // const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   if (
+  //     data.current.name &&
+  //     data.current.email &&
+  //     data.current.gender &&
+  //     data.current.status
+  //   ) {
+  //     if (isUpdate) {
+  //       try {
+  //         await updateUser({ id: data.current.id, data: data.current });
+  //         messageApi.open({
+  //           type: "success",
+  //           content: "User updated",
+  //         });
+  //         setIsOpen(false);
+  //         getUsers();
+  //       } catch (error) {
+  //         messageApi.open({
+  //           type: "error",
+  //           content: "Update user failed",
+  //         });
+  //       }
+  //     } else {
+  //       try {
+  //         await createUser(data.current as any);
+  //         messageApi.open({
+  //           type: "success",
+  //           content: "User created",
+  //         });
+  //         data.current.name = "";
+  //         data.current.email = "";
+  //         data.current.gender = "";
+  //         data.current.status = "";
+  //         setIsOpen(false);
+  //         getUsers();
+  //       } catch (error) {
+  //         messageApi.open({
+  //           type: "error",
+  //           content: "Create user failed",
+  //         });
+  //       }
+  //     }
+  //   }
+  // };
+
+  // const onNameChange = (value: string) => {
+  //   data.current.name = value;
+  // };
+  // const onEmailChange = (value: string) => {
+  //   data.current.email = value;
+  // };
+  // const onGenderChange = (value: any) => {
+  //   data.current.gender = value;
+  // };
+  // const onStatusChange = (value: any) => {
+  //   data.current.status = value;
+  // };
+
+  const [form] = FormAntd.useForm();
+
+  const handleAfterOpenChange = (open: boolean) => {
+    if (!open) {
+      router.replace("/user");
+      form.resetFields();
     }
   };
 
-  const onNameChange = (value: string) => {
-    data.current.name = value;
+  const onCancel = () => {
+    setIsOpen(false);
   };
-  const onEmailChange = (value: string) => {
-    data.current.email = value;
-  };
-  const onGenderChange = (value: any) => {
-    data.current.gender = value;
-  };
-  const onStatusChange = (value: any) => {
-    data.current.status = value;
+
+  const onFinish = async (values: any) => {
+    if (isUpdate) {
+      try {
+        values.id = data.current?.id;
+        await updateUser({ id: values.id, data: values });
+        messageApi.open({
+          type: "success",
+          content: "User updated",
+        });
+        setIsOpen(false);
+        getUsers();
+      } catch (error) {
+        messageApi.open({
+          type: "error",
+          content: "Update user failed",
+        });
+      }
+    } else {
+      try {
+        await createUser(values as any);
+        messageApi.open({
+          type: "success",
+          content: "User created",
+        });
+        setIsOpen(false);
+        getUsers();
+      } catch (error) {
+        messageApi.open({
+          type: "error",
+          content: "Create user failed",
+        });
+      }
+    }
   };
 
   return (
@@ -167,108 +202,115 @@ export function UserModal({
       {contextHolder}
       <Modal
         title={isUpdate ? "Update user" : "Add user"}
-        afterOpenChange={open => {
-          if (!open) router.replace("/user");
-        }}
+        afterOpenChange={handleAfterOpenChange}
         open={isOpen}
-        onCancel={() => {
-          setIsOpen(false);
-        }}
+        onCancel={onCancel}
         footer={null}
+        centered
       >
-        <ProfileForm
-          onSubmit={handleOnSubmit}
-          isCreateUserLoading={isCreateUserLoading}
-          isUpdateUserLoading={isUpdateUserLoading}
-          onNameChange={onNameChange}
-          onEmailChange={onEmailChange}
-          onGenderChange={onGenderChange}
-          onStatusChange={onStatusChange}
-          user={data.current}
-        />
-      </Modal>
-    </>
-  );
-}
-
-function ProfileForm({
-  className,
-  onSubmit,
-  isCreateUserLoading,
-  isUpdateUserLoading,
-  onNameChange,
-  onEmailChange,
-  onGenderChange,
-  onStatusChange,
-  user = {},
-}: React.ComponentProps<"form"> & {
-  isCreateUserLoading: boolean;
-  isUpdateUserLoading: boolean;
-  onNameChange: (arg: any) => void;
-  onEmailChange: (arg: any) => void;
-  onGenderChange: (arg: any) => void;
-  onStatusChange: (arg: any) => void;
-  user?: any;
-}) {
-  return (
-    <>
-      <FormAntd
-        className={cn("grid items-start", className)}
-        // onSubmit={onSubmit}
-        onSubmitCapture={onSubmit}
-        layout="vertical"
-      >
-        <div className="grid gap-2">
-          <FormAntd.Item label="Name">
+        <FormAntd form={form} onFinish={onFinish} layout="vertical">
+          <FormAntd.Item
+            name="name"
+            label="Name"
+            required
+            rules={[
+              {
+                required: true,
+                message: "Name is required",
+              },
+              {
+                max: 1000,
+                message: `Name max 1000 characters`,
+              },
+            ]}
+            validateDebounce={500}
+            initialValue={data.current?.name}
+          >
             <InputAntd
               placeholder="Name"
               type="text"
               id="name"
               onChange={event => {
-                onNameChange(event.target.value);
+                form.setFieldValue("name", event.target.value);
               }}
-              defaultValue={user?.name}
+              value={form.getFieldValue("name")}
             />
           </FormAntd.Item>
-        </div>
 
-        <div className="grid gap-2">
-          <FormAntd.Item label="Email">
+          <FormAntd.Item
+            name="email"
+            label="Email"
+            required
+            rules={[
+              {
+                required: true,
+                message: "Email is required",
+              },
+              {
+                pattern: new RegExp(
+                  "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+                ),
+                message: "Email is not valid",
+              },
+            ]}
+            validateDebounce={500}
+            initialValue={data.current?.email}
+          >
             <InputAntd
               type="email"
               id="email"
               placeholder="hello@world.com"
               onChange={event => {
-                onEmailChange(event.target.value);
+                form.setFieldValue("email", event.target.value);
               }}
-              defaultValue={user?.email}
+              value={form.getFieldValue("email")}
             />
           </FormAntd.Item>
-        </div>
 
-        <div className="grid gap-2">
-          <FormAntd.Item label="Gender">
+          <FormAntd.Item
+            name="gender"
+            label="Gender"
+            required
+            rules={[
+              {
+                required: true,
+                message: "Gender is required",
+              },
+            ]}
+            validateDebounce={500}
+            initialValue={data.current?.gender}
+          >
             <SelectAntd
               placeholder="Select gender"
-              defaultValue={user?.gender}
               onChange={value => {
-                onGenderChange(value);
+                form.setFieldValue("gender", value);
               }}
+              value={form.getFieldValue("gender")}
               options={[
                 { value: "male", label: "Male" },
                 { value: "female", label: "Female" },
               ]}
             />
           </FormAntd.Item>
-        </div>
 
-        <div className="grid gap-2">
-          <FormAntd.Item label="Status">
+          <FormAntd.Item
+            name="status"
+            label="Status"
+            required
+            rules={[
+              {
+                required: true,
+                message: "Status is required",
+              },
+            ]}
+            validateDebounce={500}
+            initialValue={data.current?.status}
+          >
             <SelectAntd
               onChange={value => {
-                onStatusChange(value);
+                form.setFieldValue("status", value);
               }}
-              defaultValue={user?.status}
+              value={form.getFieldValue("status")}
               placeholder="Select status"
               options={[
                 { value: "active", label: "Active" },
@@ -276,18 +318,19 @@ function ProfileForm({
               ]}
             />
           </FormAntd.Item>
-        </div>
 
-        <ButtonAntd
-          htmlType="submit"
-          type="primary"
-          size="large"
-          disabled={isCreateUserLoading || isUpdateUserLoading}
-          loading={isCreateUserLoading || isUpdateUserLoading}
-        >
-          Save
-        </ButtonAntd>
-      </FormAntd>
+          <ButtonAntd
+            htmlType="submit"
+            type="primary"
+            size="large"
+            className="w-full"
+            disabled={isCreateUserLoading || isUpdateUserLoading}
+            loading={isCreateUserLoading || isUpdateUserLoading}
+          >
+            Save
+          </ButtonAntd>
+        </FormAntd>
+      </Modal>
     </>
   );
 }
