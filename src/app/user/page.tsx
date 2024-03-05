@@ -34,9 +34,17 @@ import {
   DialogTrigger,
 } from "@/components/molecules/Dialog";
 import { useToast } from "@/hooks/useToast";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import BackButton from "@/components/atoms/BackButton";
 import ProfileCard from "@/components/molecules/ProfileCard";
+import {
+  Input as InputAntd,
+  Button as ButtonAntd,
+  Modal as ModalAntd,
+  message,
+} from "antd";
+import { UserModal } from "@/components/molecules/UserModal";
+import { UpdateUserModal } from "@/components/molecules/UpdateUserModal";
 
 export default function UserPage() {
   const { isGetUsersLoading, getUsersError, getUsersData, getUsers } =
@@ -53,26 +61,40 @@ export default function UserPage() {
     updateDebouncedKeyword(e.target.value);
   };
 
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { deleteUser, isDeleteUserLoading } = useDeleteUser();
+
+  const [messageApi, contextHolder] = message.useMessage();
+
   const handleDelete = async (id: Gorest.User["id"]) => {
     try {
       await deleteUser(id);
-      toast({
-        title: "User deleted",
+      // toast({
+      //   title: "User deleted",
+      // });
+      messageApi.open({
+        type: "info",
+        content: "User deleted",
       });
-      setDeleteDialogOpen(false);
       getUsers();
     } catch (error) {
-      toast({
-        title: "Delete user failed",
-        variant: "destructive",
+      // toast({
+      //   title: "Delete user failed",
+      //   variant: "destructive",
+      // });
+      messageApi.open({
+        type: "error",
+        content: "Delete user failed",
       });
     }
   };
 
+  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
+
+  const { confirm } = ModalAntd;
+
   return (
     <>
+      {contextHolder}
       <main>
         {/* Navbar */}
         <Navbar />
@@ -86,15 +108,34 @@ export default function UserPage() {
           <TypographyH1 className="col-span-full">Users</TypographyH1>
 
           <div className="mt-[16px] flex gap-[8px] justify-between items-center">
-            <Input type="text" placeholder="Search" onChange={handleSearch} />
-            <DrawerDialog
-              trigger={
-                <Button>
-                  <PlusIcon className="mr-2 h-4 w-4" /> Add
-                </Button>
-              }
+            {/* <Input type="text" placeholder="Search" onChange={handleSearch} /> */}
+            <InputAntd
+              type="search"
+              placeholder="Search"
+              onChange={handleSearch}
+              size="large"
+            />
+
+            <ButtonAntd
+              icon={<PlusIcon />}
+              type="primary"
+              size="large"
+              rootClassName="flex items-center"
+              className="!flex !items-center"
+              onClick={() => setIsCreateUserModalOpen(true)}
+            >
+              Add
+            </ButtonAntd>
+
+            <UserModal
+              isUpdate={false}
+              isOpen={isCreateUserModalOpen}
+              setIsOpen={open => {
+                setIsCreateUserModalOpen(open);
+              }}
             />
           </div>
+
           <div className="mt-[16px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center gap-[16px]">
             {/* User list / table */}
             {isGetUsersLoading ? (
@@ -125,56 +166,38 @@ export default function UserPage() {
                   <Card key={user.id} className="w-full">
                     <CardHeader className="p-[16px]">
                       <div className="flex flex-row items-center justify-end gap-[0px]">
-                        <DrawerDialog
-                          isUpdate={true}
-                          trigger={
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="w-[32px] h-[32px] aspect-square"
-                            >
-                              <PencilLineIcon className="w-[16px]" />
-                            </Button>
-                          }
-                          initialData={user}
-                        />
-                        <Dialog
-                          open={isDeleteDialogOpen}
-                          onOpenChange={setDeleteDialogOpen}
-                        >
-                          <DialogTrigger asChild>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="w-[32px] h-[32px] aspect-square text-destructive hover:text-destructive"
-                            >
-                              <TrashIcon className="w-[16px]" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                Are you absolutely sure?
-                              </DialogTitle>
-                              <DialogDescription>
-                                This action cannot be undone. Are you sure you
-                                want to permanently delete this user?
-                              </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                              <Button
-                                type="submit"
-                                variant="destructive"
-                                onClick={() => handleDelete(user.id)}
-                              >
-                                {isDeleteUserLoading && (
-                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                )}
-                                Confirm
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                        <UpdateUserModal user={user} />
+
+                        <ButtonAntd
+                          icon={<TrashIcon className="w-[16px]" />}
+                          type="text"
+                          danger
+                          onClick={() => {
+                            confirm({
+                              title: "Are you sure delete this user?",
+                              content: (
+                                <>
+                                  <p>{user.name}</p>
+                                  <p>{user.email}</p>
+                                </>
+                              ),
+                              icon: null,
+                              okText: "Delete",
+                              okType: "danger",
+                              cancelText: "Cancel",
+                              cancelButtonProps: {
+                                type: "text",
+                              },
+                              onOk() {
+                                return new Promise(async (resolve, reject) => {
+                                  const res = await handleDelete(user.id);
+                                  resolve(res);
+                                });
+                              },
+                              onCancel() {},
+                            });
+                          }}
+                        ></ButtonAntd>
                       </div>
                     </CardHeader>
                     <CardContent>

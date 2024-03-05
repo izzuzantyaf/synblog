@@ -1,6 +1,12 @@
 import { Button } from "@/components/atoms/Button";
 import GithubButton from "@/components/atoms/GithubButton";
 import Link from "next/link";
+import { Button as ButtonAntd, Flex } from "antd";
+import { cn } from "@/lib/utils";
+
+const styles = {
+  buttonLink: "!text-primary p-0 hover:underline",
+} as const;
 
 export function Navbar() {
   return (
@@ -9,13 +15,24 @@ export function Navbar() {
         <Link href="/">
           <div className="brand shrink-0 font-bold text-2xl">Synblog</div>
         </Link>
-        <Button asChild variant="link" className="ml-[16px] p-0">
+
+        <ButtonAntd type="link" className={cn(styles.buttonLink, "ml-[16px]")}>
+          <Link href="/">Articles</Link>
+        </ButtonAntd>
+
+        <ButtonAntd type="link" className={styles.buttonLink}>
+          <Link href="/user">Users</Link>
+        </ButtonAntd>
+
+        {/* <Button asChild variant="link" className="ml-[16px] p-0">
           <Link href="/">Articles</Link>
         </Button>
         <Button asChild variant="link" className="ml-[16px] p-0">
           <Link href="/user">Users</Link>
-        </Button>
+        </Button> */}
+
         <div className="flex-grow"></div>
+
         <GithubButton />
       </div>
     </div>

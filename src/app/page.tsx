@@ -19,10 +19,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ArticleCard from "@/components/molecules/ArticleCard";
+import { Pagination as PaginationAntd } from "antd";
 
 export default function Home() {
   const DEFAULT_PAGE = 1;
   const MAX_PAGE = 3;
+  const PER_PAGE = 12;
   const searchParams = useSearchParams();
   const pageFromSearchParams = parseInt(searchParams?.get("page") as string);
   const [page, setPage] = useState(
@@ -30,7 +32,7 @@ export default function Home() {
   );
   const { isGetPostsLoading, getPostsError, getPostsData } = useGetPosts({
     page: page,
-    per_page: 12,
+    per_page: PER_PAGE,
   });
   const router = useRouter();
 
@@ -87,30 +89,28 @@ export default function Home() {
               <p className="col-span-full">Something went wrong</p>
             </>
           ) : getPostsData ? (
-            getPostsData
-              .filter((post, index) => index < 6)
-              ?.map(post => {
-                const width = 320 * 2;
-                const height = 180 * 2;
+            getPostsData?.map(post => {
+              const width = 320 * 2;
+              const height = 180 * 2;
 
-                return (
-                  <ArticleCard
-                    key={post.id}
-                    url={`/articles/${post.id}`}
-                    title={post.title}
-                    imageSrc={picsumService.getStaticRandomImageUrl(
-                      post.id.toString(),
-                      { width, height }
-                    )}
-                    imageAlt={picsumService.getStaticRandomImageUrl(
-                      post.id.toString(),
-                      { width, height }
-                    )}
-                    imageWidth={width}
-                    imageHeight={height}
-                  />
-                );
-              })
+              return (
+                <ArticleCard
+                  key={post.id}
+                  url={`/articles/${post.id}`}
+                  title={post.title}
+                  imageSrc={picsumService.getStaticRandomImageUrl(
+                    post.id.toString(),
+                    { width, height }
+                  )}
+                  imageAlt={picsumService.getStaticRandomImageUrl(
+                    post.id.toString(),
+                    { width, height }
+                  )}
+                  imageWidth={width}
+                  imageHeight={height}
+                />
+              );
+            })
           ) : (
             <>
               <p className="col-span-full">No articles</p>
@@ -119,29 +119,15 @@ export default function Home() {
         </div>
 
         {/* Article list pagination */}
-        <Pagination className="mt-[16px]">
-          <PaginationContent>
-            <PaginationItem onClick={handlePaginationPrevious}>
-              <PaginationPrevious className="cursor-pointer" />
-            </PaginationItem>
-            {Array(MAX_PAGE)
-              .fill(null)
-              .map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    onClick={() => handlePagination(index + 1)}
-                    isActive={index + 1 === page}
-                    className="cursor-pointer"
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-            <PaginationItem onClick={handlePaginationNext}>
-              <PaginationNext className="cursor-pointer" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <PaginationAntd
+          total={MAX_PAGE * PER_PAGE}
+          defaultCurrent={page}
+          pageSize={PER_PAGE}
+          className="!mt-[16px] flex justify-center"
+          onChange={page => {
+            handlePagination(page);
+          }}
+        />
         {/* end of Article list pagination */}
         {/* end of Article list */}
       </div>
