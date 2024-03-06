@@ -34,7 +34,7 @@ import {
   DialogTrigger,
 } from "@/components/molecules/Dialog";
 import { useToast } from "@/hooks/useToast";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BackButton from "@/components/atoms/BackButton";
 import ProfileCard from "@/components/molecules/ProfileCard";
 import {
@@ -49,6 +49,7 @@ import { UserModal } from "@/components/molecules/UserModal";
 import { UpdateUserModal } from "@/components/molecules/UpdateUserModal";
 import type { RadioChangeEvent } from "antd";
 import { Radio as RadioAntd, Table as TableAntd } from "antd";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function UserPage() {
   const { isGetUsersLoading, getUsersError, getUsersData, getUsers } =
@@ -96,7 +97,22 @@ export default function UserPage() {
 
   const { confirm } = ModalAntd;
 
-  const [viewMode, setViewMode] = useState<"List" | "Table">("List");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  type ViewMode = "List" | "Table";
+  const [viewMode, setViewMode] = useState<ViewMode>(
+    (searchParams.get("ulv") as ViewMode) ?? "List"
+  );
+
+  useEffect(() => {
+    if (searchParams.get("ulv") === "List") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("ulv");
+      router.replace(url.toString());
+    }
+    setViewMode((searchParams.get("ulv") as ViewMode) ?? "List");
+  }, [searchParams.get("ulv")]);
 
   return (
     <>
@@ -149,7 +165,10 @@ export default function UserPage() {
                 { label: "Table", value: "Table" },
               ]}
               onChange={event => {
-                setViewMode(event.target.value);
+                const url = new URL(window.location.href);
+                url.searchParams.set("ulv", event.target.value);
+                router.replace(url.toString());
+                // setViewMode(event.target.value);
               }}
               value={viewMode}
               optionType="button"

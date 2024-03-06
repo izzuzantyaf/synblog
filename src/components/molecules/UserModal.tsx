@@ -64,7 +64,9 @@ export function UserModal({
   const router = useRouter();
 
   if (isOpen && isUpdate) {
-    router.replace(`/user?id=${initialData.id}`);
+    const url = new URL(window.location.href);
+    url.searchParams.set("id", initialData.id);
+    router.replace(url.toString());
   }
 
   const { createUser, isCreateUserLoading, createUserData, createUserError } =
@@ -153,7 +155,9 @@ export function UserModal({
 
   const handleAfterOpenChange = (open: boolean) => {
     if (!open) {
-      router.replace("/user");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("id");
+      router.replace(url.toString());
       form.resetFields();
     }
   };
