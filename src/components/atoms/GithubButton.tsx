@@ -8,18 +8,20 @@ export default function GithubButton() {
     <ButtonAntd
       icon={<GithubIcon />}
       href={"https://github.com/izzuzantyaf/synblog"}
+      target="_blank"
+      rel="noopener noreferrer"
     />
   );
 
-  return (
-    <Button size="icon" variant="outline" asChild>
-      <Link
-        href={"https://github.com/izzuzantyaf/synblog"}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <GithubIcon />
-      </Link>
-    </Button>
-  );
+  // return (
+  //   <Button size="icon" variant="outline" asChild>
+  //     <Link
+  //       href={"https://github.com/izzuzantyaf/synblog"}
+  //       target="_blank"
+  //       rel="noopener noreferrer"
+  //     >
+  //       <GithubIcon />
+  //     </Link>
+  //   </Button>
+  // );
 }
