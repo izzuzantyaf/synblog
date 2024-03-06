@@ -11,17 +11,33 @@ const styles = {
 export function Navbar() {
   return (
     <div className="navbar sticky left-0 right-0 top-0 backdrop-blur-lg bg-opacity-30 bg-white z-10">
-      <div className="h-[56px] px-[16px] flex gap-[8px] items-center max-w-screen-xl mx-auto">
-        <Link href="/">
+      <div className="h-[56px] px-[16px] flex gap-[16px] items-center max-w-screen-xl mx-auto">
+        <Link href="/" className="hidden sm:inline">
           <div className="brand shrink-0 font-bold text-2xl">Synblog</div>
         </Link>
 
-        <ButtonAntd type="link" className={cn(styles.buttonLink, "ml-[16px]")}>
+        <ButtonAntd
+          type="link"
+          className={cn(styles.buttonLink, "sm:ml-[8px]")}
+          rootClassName="!p-[0px]"
+        >
           <Link href="/">Articles</Link>
         </ButtonAntd>
 
-        <ButtonAntd type="link" className={styles.buttonLink}>
+        <ButtonAntd
+          type="link"
+          className={styles.buttonLink}
+          rootClassName="!p-[0px]"
+        >
           <Link href="/user">Users</Link>
+        </ButtonAntd>
+
+        <ButtonAntd
+          type="link"
+          className={styles.buttonLink}
+          rootClassName="!p-[0px]"
+        >
+          <Link href="/student">Students</Link>
         </ButtonAntd>
 
         {/* <Button asChild variant="link" className="ml-[16px] p-0">
