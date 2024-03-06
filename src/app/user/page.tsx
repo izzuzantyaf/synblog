@@ -43,15 +43,18 @@ import {
   Modal as ModalAntd,
   Card as CardAntd,
   message,
+  Badge,
 } from "antd";
 import { UserModal } from "@/components/molecules/UserModal";
 import { UpdateUserModal } from "@/components/molecules/UpdateUserModal";
+import type { RadioChangeEvent } from "antd";
+import { Radio as RadioAntd, Table as TableAntd } from "antd";
 
 export default function UserPage() {
   const { isGetUsersLoading, getUsersError, getUsersData, getUsers } =
     useGetUsers({
       page: 1,
-      per_page: 12,
+      per_page: 36,
     });
 
   const { toast } = useToast();
@@ -92,6 +95,8 @@ export default function UserPage() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
   const { confirm } = ModalAntd;
+
+  const [viewMode, setViewMode] = useState<"List" | "Table">("List");
 
   return (
     <>
@@ -137,40 +142,170 @@ export default function UserPage() {
             />
           </div>
 
-          <div className="mt-[16px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center gap-[16px]">
-            {/* User list / table */}
-            {isGetUsersLoading ? (
-              Array(6)
-                .fill(null)
-                .map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="rounded-lg h-[192px] w-full"
-                  />
-                ))
-            ) : getUsersError ? (
-              <>
-                <p className="col-span-full">Something went wrong</p>
-              </>
-            ) : getUsersData ? (
-              (debouncedKeyword
-                ? getUsersData.filter(user => {
-                    // Search using regex case insensitive
-                    const regex = new RegExp(debouncedKeyword, "i");
-                    if (regex.test(user.name) || regex.test(user.email))
-                      return true;
-                    return false;
-                  })
-                : getUsersData
-              )?.map(user => {
-                return (
-                  <CardAntd
-                    size="small"
-                    key={user.id}
-                    className="w-full"
-                    extra={
-                      <div className="flex flex-row items-center justify-end gap-[0px]">
-                        <UpdateUserModal user={user} />
+          <div className="flex mt-[16px]">
+            <RadioAntd.Group
+              options={[
+                { label: "List", value: "List" },
+                { label: "Table", value: "Table" },
+              ]}
+              onChange={event => {
+                setViewMode(event.target.value);
+              }}
+              value={viewMode}
+              optionType="button"
+              className="shrink-0"
+            />
+          </div>
+
+          {viewMode === "List" ? (
+            <div className="mt-[16px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center gap-[16px]">
+              {/* User list / table */}
+              {isGetUsersLoading ? (
+                Array(6)
+                  .fill(null)
+                  .map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      className="rounded-lg h-[192px] w-full"
+                    />
+                  ))
+              ) : getUsersError ? (
+                <>
+                  <p className="col-span-full">Something went wrong</p>
+                </>
+              ) : getUsersData ? (
+                (debouncedKeyword
+                  ? getUsersData.filter(user => {
+                      // Search using regex case insensitive
+                      const regex = new RegExp(debouncedKeyword, "i");
+                      if (regex.test(user.name) || regex.test(user.email))
+                        return true;
+                      return false;
+                    })
+                  : getUsersData
+                )?.map(user => {
+                  return (
+                    <CardAntd
+                      size="small"
+                      key={user.id}
+                      className="w-full"
+                      extra={
+                        <div className="flex flex-row items-center justify-end gap-[0px]">
+                          <UpdateUserModal user={user} />
+
+                          <ButtonAntd
+                            icon={<TrashIcon className="w-[16px]" />}
+                            type="text"
+                            danger
+                            onClick={() => {
+                              confirm({
+                                title: "Are you sure delete this user?",
+                                content: (
+                                  <>
+                                    <p>{user.name}</p>
+                                    <p>{user.email}</p>
+                                  </>
+                                ),
+                                icon: null,
+                                okText: "Delete",
+                                okType: "danger",
+                                cancelText: "Cancel",
+                                cancelButtonProps: {
+                                  type: "text",
+                                },
+                                onOk() {
+                                  return new Promise(
+                                    async (resolve, reject) => {
+                                      const res = await handleDelete(user.id);
+                                      resolve(res);
+                                    }
+                                  );
+                                },
+                                onCancel() {},
+                              });
+                            }}
+                          ></ButtonAntd>
+                        </div>
+                      }
+                    >
+                      <ProfileCard
+                        title={user.name}
+                        subTitle={user.email}
+                        avatarSrc="https://github.com/shadcn.png"
+                      />
+                    </CardAntd>
+                  );
+                }) ?? <p className="col-span-full">No users</p>
+              ) : (
+                <>
+                  <p className="col-span-full">No users</p>
+                </>
+              )}
+              {/* end of User list / table */}
+            </div>
+          ) : (
+            <div className="mt-[16px]">
+              <TableAntd
+                sticky={{ offsetHeader: 56 }}
+                scroll={{ x: 768 }}
+                columns={[
+                  {
+                    title: "ID",
+                    dataIndex: "id",
+                    key: "id",
+                    sorter: (a, b) => {
+                      if (a.id > b.id) return 1;
+                      else if (a.id < b.id) return -1;
+                      else return 0;
+                    },
+                  },
+                  {
+                    title: "Name",
+                    dataIndex: "name",
+                    key: "name",
+                    sorter: (a, b) => {
+                      if (a.name > b.name) return 1;
+                      else if (a.name < b.name) return -1;
+                      else return 0;
+                    },
+                  },
+                  {
+                    title: "Email",
+                    dataIndex: "email",
+                    key: "email",
+                    sorter: (a, b) => {
+                      if (a.email > b.email) return 1;
+                      else if (a.email < b.email) return -1;
+                      else return 0;
+                    },
+                  },
+                  {
+                    title: "Gender",
+                    dataIndex: "gender",
+                    key: "gender",
+                  },
+                  {
+                    title: "Status",
+                    dataIndex: "status",
+                    key: "status",
+                    render: (_, record) => {
+                      if (record.status === "active")
+                        return (
+                          <span className="text-green-600">
+                            {record.status}
+                          </span>
+                        );
+                      return <span>{record.status}</span>;
+                    },
+                  },
+                  {
+                    title: "Action",
+                    key: "action",
+                    fixed: "right",
+                    width: 100,
+                    render: (_, record) => (
+                      <div className="flex gap-[8px]">
+                        <UpdateUserModal user={record} />
 
                         <ButtonAntd
                           icon={<TrashIcon className="w-[16px]" />}
@@ -181,8 +316,8 @@ export default function UserPage() {
                               title: "Are you sure delete this user?",
                               content: (
                                 <>
-                                  <p>{user.name}</p>
-                                  <p>{user.email}</p>
+                                  <p>{record.name}</p>
+                                  <p>{record.email}</p>
                                 </>
                               ),
                               icon: null,
@@ -194,7 +329,7 @@ export default function UserPage() {
                               },
                               onOk() {
                                 return new Promise(async (resolve, reject) => {
-                                  const res = await handleDelete(user.id);
+                                  const res = await handleDelete(record.id);
                                   resolve(res);
                                 });
                               },
@@ -203,71 +338,24 @@ export default function UserPage() {
                           }}
                         ></ButtonAntd>
                       </div>
-                    }
-                  >
-                    <ProfileCard
-                      title={user.name}
-                      subTitle={user.email}
-                      avatarSrc="https://github.com/shadcn.png"
-                    />
-                  </CardAntd>
-                );
-
-                // return (
-                //   <Card key={user.id} className="w-full">
-                //     <CardHeader className="p-[16px]">
-                //       <div className="flex flex-row items-center justify-end gap-[0px]">
-                //         <UpdateUserModal user={user} />
-
-                //         <ButtonAntd
-                //           icon={<TrashIcon className="w-[16px]" />}
-                //           type="text"
-                //           danger
-                //           onClick={() => {
-                //             confirm({
-                //               title: "Are you sure delete this user?",
-                //               content: (
-                //                 <>
-                //                   <p>{user.name}</p>
-                //                   <p>{user.email}</p>
-                //                 </>
-                //               ),
-                //               icon: null,
-                //               okText: "Delete",
-                //               okType: "danger",
-                //               cancelText: "Cancel",
-                //               cancelButtonProps: {
-                //                 type: "text",
-                //               },
-                //               onOk() {
-                //                 return new Promise(async (resolve, reject) => {
-                //                   const res = await handleDelete(user.id);
-                //                   resolve(res);
-                //                 });
-                //               },
-                //               onCancel() {},
-                //             });
-                //           }}
-                //         ></ButtonAntd>
-                //       </div>
-                //     </CardHeader>
-                //     <CardContent>
-                //       <ProfileCard
-                //         title={user.name}
-                //         subTitle={user.email}
-                //         avatarSrc="https://github.com/shadcn.png"
-                //       />
-                //     </CardContent>
-                //   </Card>
-                // );
-              }) ?? <p className="col-span-full">No users</p>
-            ) : (
-              <>
-                <p className="col-span-full">No users</p>
-              </>
-            )}
-            {/* end of User list / table */}
-          </div>
+                    ),
+                  },
+                ]}
+                dataSource={
+                  debouncedKeyword
+                    ? getUsersData?.filter(user => {
+                        // Search using regex case insensitive
+                        const regex = new RegExp(debouncedKeyword, "i");
+                        if (regex.test(user.name) || regex.test(user.email))
+                          return true;
+                        return false;
+                      })
+                    : getUsersData
+                }
+                pagination={false}
+              />
+            </div>
+          )}
         </div>
       </main>
     </>
