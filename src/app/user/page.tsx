@@ -101,17 +101,13 @@ export default function UserPage() {
   const searchParams = useSearchParams();
 
   type ViewMode = "List" | "Table";
+  const DEFAULT_VIEW_MODE: ViewMode = "List";
   const [viewMode, setViewMode] = useState<ViewMode>(
-    (searchParams.get("ulv") as ViewMode) ?? "List"
+    (searchParams.get("ulv") as ViewMode) ?? DEFAULT_VIEW_MODE
   );
 
   useEffect(() => {
-    if (searchParams.get("ulv") === "List") {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("ulv");
-      router.replace(url.toString());
-    }
-    setViewMode((searchParams.get("ulv") as ViewMode) ?? "List");
+    setViewMode((searchParams.get("ulv") as ViewMode) ?? DEFAULT_VIEW_MODE);
   }, [searchParams.get("ulv")]);
 
   return (
@@ -166,7 +162,9 @@ export default function UserPage() {
               ]}
               onChange={event => {
                 const url = new URL(window.location.href);
-                url.searchParams.set("ulv", event.target.value);
+                if (event.target.value === DEFAULT_VIEW_MODE)
+                  url.searchParams.delete("ulv");
+                else url.searchParams.set("ulv", event.target.value);
                 router.replace(url.toString());
                 // setViewMode(event.target.value);
               }}
