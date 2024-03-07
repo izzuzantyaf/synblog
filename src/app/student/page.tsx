@@ -151,6 +151,8 @@ export default function StudentPage() {
 
     addStudent(newStudent);
 
+    form.resetFields();
+
     messageApi.success({
       content: "Student added",
       type: "success",
