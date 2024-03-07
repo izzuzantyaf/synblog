@@ -125,11 +125,6 @@ export default function StudentPage() {
   );
 
   useEffect(() => {
-    if (searchParams.get("t") === DEFAULT_ACTIVE_TAB) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("t");
-      router.replace(url.toString());
-    }
     setActiveTab((searchParams.get("t") as Tab) ?? DEFAULT_ACTIVE_TAB);
   }, [searchParams.get("t")]);
 
@@ -180,7 +175,9 @@ export default function StudentPage() {
             centered
             onChange={activeKey => {
               const url = new URL(window.location.href);
-              url.searchParams.set("t", activeKey);
+              if (activeKey === DEFAULT_ACTIVE_TAB)
+                url.searchParams.delete("t");
+              else url.searchParams.set("t", activeKey);
               router.replace(url.toString());
             }}
             items={new Array(3).fill(null).map((_, i) => {
