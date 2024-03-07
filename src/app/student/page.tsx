@@ -51,7 +51,8 @@ import { UpdateUserModal } from "@/components/molecules/UpdateUserModal";
 import type { RadioChangeEvent } from "antd";
 import { Radio as RadioAntd, Table as TableAntd } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Student, useStudentStore } from "@/app/student/store/studentStore";
+import { Student, useStudentStore } from "@/store/studentStore";
+import { useGlobalStore } from "@/store";
 
 export default function StudentPage() {
   // const { isGetUsersLoading, getUsersError, getUsersData, getUsers } =
@@ -134,8 +135,8 @@ export default function StudentPage() {
 
   const [form] = FormAntd.useForm();
 
-  const students = useStudentStore(state => state.students);
-  const addStudent = useStudentStore(state => state.add);
+  const students = useGlobalStore(state => state.students);
+  const addStudent = useGlobalStore.use.addStudent();
   const currentStudents = students.filter(
     stud => stud.type_class === Number(activeTab)
   );
