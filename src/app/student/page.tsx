@@ -45,6 +45,7 @@ import {
   Form as FormAntd,
   message,
   Tabs,
+  notification,
 } from "antd";
 import { UserModal } from "@/components/molecules/UserModal";
 import { UpdateUserModal } from "@/components/molecules/UpdateUserModal";
@@ -53,6 +54,7 @@ import { Radio as RadioAntd, Table as TableAntd } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Student, useStudentStore } from "@/store/studentStore";
 import { useGlobalStore } from "@/store";
+import Centrifuge from "centrifuge";
 
 export default function StudentPage() {
   // const { isGetUsersLoading, getUsersError, getUsersData, getUsers } =
@@ -155,9 +157,54 @@ export default function StudentPage() {
     });
   };
 
+  const [notificationApi, notificationContextHolder] =
+    notification.useNotification();
+
+  useEffect(() => {
+    const appsMadhaniWsUrl = process.env
+      .NEXT_PUBLIC_APPS_MADHANI_WS_URL as string;
+
+    const centrifuge = new Centrifuge(appsMadhaniWsUrl);
+
+    // centrifuge.on("connecting", ctx => {
+    //   console.log(`${appsMadhaniWsUrl} connecting...`, ctx);
+    // });
+
+    centrifuge.on("connect", ctx => {
+      console.log(`${appsMadhaniWsUrl} connected`, ctx);
+    });
+
+    centrifuge.on("disconnect", ctx => {
+      console.log(`${appsMadhaniWsUrl} disconnected`, ctx);
+    });
+
+    const channelName = "ws/workshop/001m/notifications/users/SUPERUSER123";
+
+    centrifuge.subscribe(channelName, ctx => {
+      notificationApi.info({
+        message: ctx?.data?.subject,
+        description: (
+          <>
+            <p>User ID: {ctx?.data?.user_id}</p>
+            <p>Message: {ctx?.data?.message}</p>
+            <p>Send type: {ctx?.data?.send_type}</p>
+          </>
+        ),
+        placement: "topRight",
+      });
+    });
+
+    centrifuge.connect();
+
+    return () => {
+      centrifuge.disconnect();
+    };
+  }, []);
+
   return (
     <>
       {contextHolder}
+      {notificationContextHolder}
       <main>
         {/* Navbar */}
         <Navbar />
